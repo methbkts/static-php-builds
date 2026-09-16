@@ -38,9 +38,12 @@ if [[ $state == draft ]]; then
   gh release delete "$version" --repo "$GITHUB_REPOSITORY" --yes
 fi
 
-highest=$({ gh release list --repo "$GITHUB_REPOSITORY" --exclude-drafts --limit 1000 --json tagName --jq '.[].tagName'; echo "$version"; } | sort -V | tail -n 1)
 latest=false
-[[ $highest == "$version" ]] && latest=true
+
+if ! is_prerelease "$version"; then
+  highest=$({ gh release list --repo "$GITHUB_REPOSITORY" --exclude-drafts --limit 1000 --json tagName --jq '.[].tagName'; echo "$version"; } | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1)
+  [[ $highest == "$version" ]] && latest=true
+fi
 
 notes=$(
   cat <<EOF

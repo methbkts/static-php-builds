@@ -8,10 +8,10 @@ source "$(dirname "$0")/lib.sh"
 
 requested=${1:-}
 
-if [[ -n $requested ]]; then
-  requests=("$requested")
-else
+if [[ -z $requested || $requested == "all" ]]; then
   mapfile -t requests < <(grep -Ev '^[[:space:]]*(#|$)' "$ROOT_DIR/config/php-branches.txt")
+else
+  requests=("$requested")
 fi
 
 releases=()
@@ -20,9 +20,11 @@ for request in "${requests[@]}"; do
   resolved=$("$ROOT_DIR/scripts/resolve-php.sh" "$request")
   version=$(sed -n 's/^version=//p' <<<"$resolved")
   sha256=$(sed -n 's/^sha256=//p' <<<"$resolved")
+  url=$(sed -n 's/^url=//p' <<<"$resolved")
 
   validate_version "$version"
   validate_sha256 "$sha256"
+  validate_source_url "$version" "$url"
 
   state=$(release_state "$version")
 
@@ -32,7 +34,7 @@ for request in "${requests[@]}"; do
   fi
 
   echo "PHP $version will be built" >&2
-  releases+=("$(jq -cn --arg version "$version" --arg sha256 "$sha256" '{version: $version, sha256: $sha256}')")
+  releases+=("$(jq -cn --arg version "$version" --arg sha256 "$sha256" --arg url "$url" --arg state "$state" '{version: $version, sha256: $sha256, url: $url, state: $state}')")
 done
 
 if ((${#releases[@]} == 0)); then

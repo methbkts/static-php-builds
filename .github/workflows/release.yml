@@ -2,11 +2,11 @@ name: Release
 
 on:
   schedule:
-    - cron: "17 4 * * *"
+    - cron: "0 9 * * *"
   workflow_dispatch:
     inputs:
       version:
-        description: PHP branch or version (e.g. 8.5 or 8.5.10). Empty builds every missing release.
+        description: PHP branch or version (e.g. 8.5, 8.5.10 or 8.6.0RC1), "all" for every branch, or empty for every missing release.
         required: false
         type: string
       publish:
@@ -66,6 +66,7 @@ jobs:
     env:
       PHP_VERSION: ${{ matrix.release.version }}
       PHP_SHA256: ${{ matrix.release.sha256 }}
+      PHP_SOURCE_URL: ${{ matrix.release.url }}
       PLATFORM: ${{ matrix.platform }}
     steps:
       - name: Checkout
@@ -74,7 +75,7 @@ jobs:
           persist-credentials: false
 
       - name: Build
-        run: scripts/build.sh "$PHP_VERSION" "$PHP_SHA256" "$PLATFORM"
+        run: scripts/build.sh "$PHP_VERSION" "$PHP_SHA256" "$PLATFORM" "$PHP_SOURCE_URL"
 
       - name: Smoke test
         run: scripts/smoke-test.sh "dist/php-$PHP_VERSION-$PLATFORM.tar.gz" "$PHP_VERSION"
@@ -119,11 +120,13 @@ jobs:
           merge-multiple: true
 
       - name: Attest build provenance
+        if: matrix.release.state != 'published'
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: dist/php-${{ matrix.release.version }}-*.tar.gz
 
       - name: Publish
+        if: matrix.release.state != 'published'
         env:
           GH_TOKEN: ${{ github.token }}
         run: scripts/publish-release.sh "$PHP_VERSION" dist

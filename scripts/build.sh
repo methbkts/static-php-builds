@@ -8,10 +8,12 @@ source "$(dirname "$0")/../config/build.env"
 version=${1:-}
 php_sha256=${2:-}
 platform=${3:-}
+source_url=${4:-}
 
 validate_version "$version"
 validate_sha256 "$php_sha256"
 validate_platform "$platform"
+validate_source_url "$version" "$source_url"
 
 umask 022
 
@@ -72,7 +74,7 @@ echo "::group::Download sources"
 "$work/spc" download \
   --with-php="$branch" \
   --for-extensions="${extensions},xdebug" \
-  --custom-url="php-src:https://www.php.net/distributions/php-${version}.tar.xz" \
+  --custom-url="php-src:${source_url}" \
   --retry=3 \
   --debug
 

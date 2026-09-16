@@ -5,7 +5,7 @@
 - [Xdebug](#xdebug)
 - [Verifying a Download](#verifying-a-download)
 - [How Releases Are Built](#how-releases-are-built)
-  - [Building a Release Manually](#building-a-release-manually)
+  - [Building Releases Manually](#building-releases-manually)
 - [Release Layout](#release-layout)
 
 ## Introduction
@@ -19,7 +19,7 @@ The extensions compiled into every build are listed in [`config/extensions.txt`]
 First, you should point mise's `php` tool at this repository:
 
 ```sh
-mise config set -f ~/.config/mise/config.toml tool_alias.php github:nunomaduro/static-php-builds
+mise tool-alias set php github:nunomaduro/static-php-builds
 ```
 
 Once configured, you may install and use PHP like any other mise tool:
@@ -36,6 +36,12 @@ Projects that pin a PHP version in their `mise.toml` file use these builds as we
 ```toml
 [tools]
 php = "8.4"
+```
+
+Alpha, beta, and release candidate versions of the next PHP release, such as `8.6.0beta3`, install the same way. `php@latest` always resolves to the newest stable release:
+
+```sh
+mise use --global php@8.6.0beta3
 ```
 
 ## Xdebug
@@ -90,7 +96,7 @@ sha256sum --check --ignore-missing SHA256SUMS
 
 ## How Releases Are Built
 
-A scheduled workflow runs once a day. For each branch in [`config/php-branches.txt`](config/php-branches.txt), it looks up the newest release on php.net and builds it if this repository does not have a release for it yet:
+A scheduled workflow runs every day at 09:00 UTC. For each branch in [`config/php-branches.txt`](config/php-branches.txt), it looks up the newest release on php.net and builds it only if this repository does not have a release for it yet. A branch without a stable release, such as 8.6 before its general availability, uses its newest pre-release from qa.php.net:
 
 1. The PHP source is downloaded from php.net and verified against the SHA-256 that php.net publishes.
 2. PHP is compiled with a pinned, checksum-verified [static-php-cli](https://github.com/crazywhalecc/static-php-cli) on GitHub-hosted runners.
@@ -101,21 +107,23 @@ All pinned versions and checksums live in [`config/build.env`](config/build.env)
 
 Security releases of PHP follow the same schedule, so they are built within a day of being published on php.net.
 
-### Building a Release Manually
+### Building Releases Manually
 
-You may also run the **Release** workflow yourself, passing a PHP branch or version:
+You may also run the **Release** workflow yourself. The `version` input accepts a PHP branch, an exact version, or `all`:
 
 ```sh
 gh workflow run release.yml -f version=8.5
+gh workflow run release.yml -f version=8.6.0beta3
+gh workflow run release.yml -f version=all
 ```
 
-By default, the workflow only builds and smoke tests. If you would like to publish the result as a GitHub release, pass the `publish` input as well:
+`all` builds the newest release of every branch, including the releases that are already published. Leaving `version` empty builds only the releases that are missing, the same as the schedule.
+
+By default, a manual run only builds and smoke tests. If you would like to publish the result as a GitHub release, pass the `publish` input as well. A version that is already published is left as it is, because releases in this repository cannot change after they are published:
 
 ```sh
-gh workflow run release.yml -f version=8.5.10 -f publish=true
+gh workflow run release.yml -f version=all -f publish=true
 ```
-
-Leaving `version` empty builds every release that is missing from this repository.
 
 ## Release Layout
 

@@ -34,7 +34,21 @@ verify_sha256() {
 }
 
 validate_version() {
-  [[ $1 =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || fail "invalid PHP version: $1"
+  [[ $1 =~ ^[0-9]+\.[0-9]+\.[0-9]+((alpha|beta|RC)[0-9]+)?$ ]] || fail "invalid PHP version: $1"
+}
+
+is_prerelease() {
+  [[ $1 =~ (alpha|beta|RC)[0-9]+$ ]]
+}
+
+validate_source_url() {
+  local version=$1 url=$2
+
+  if is_prerelease "$version"; then
+    [[ $url =~ ^https://downloads\.php\.net/~[a-z0-9_-]+/php-${version//./\\.}\.tar\.xz$ ]] || fail "unexpected source URL for PHP $version: $url"
+  else
+    [[ $url == "https://www.php.net/distributions/php-${version}.tar.xz" ]] || fail "unexpected source URL for PHP $version: $url"
+  fi
 }
 
 validate_sha256() {
