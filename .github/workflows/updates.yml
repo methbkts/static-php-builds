@@ -1,0 +1,62 @@
+name: Updates
+
+on:
+  schedule:
+    - cron: '5 8 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: updates
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check pinned tools
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ISSUE_TITLE: Update pinned tools
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Compare pinned versions with upstream
+        id: check
+        run: |
+          if scripts/check-updates.sh >"$RUNNER_TEMP/report.md"; then
+            echo "outdated=false" >>"$GITHUB_OUTPUT"
+          else
+            echo "outdated=true" >>"$GITHUB_OUTPUT"
+          fi
+          cat "$RUNNER_TEMP/report.md"
+
+      - name: Open or update the issue
+        if: steps.check.outputs.outdated == 'true'
+        run: |
+          {
+            echo "A pinned tool has a newer upstream version. Bump the version and its SHA-256 in the file named in the table."
+            echo
+            cat "$RUNNER_TEMP/report.md"
+            echo
+            echo "Report from $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID."
+          } >"$RUNNER_TEMP/body.md"
+          number=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "\"$ISSUE_TITLE\" in:title" --json number,title --jq --arg title "$ISSUE_TITLE" '.[] | select(.title == $title) | .number' | head -n 1)
+          if [[ -n $number ]]; then
+            gh issue edit "$number" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/body.md"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$ISSUE_TITLE" --body-file "$RUNNER_TEMP/body.md"
+          fi
+
+      - name: Close the issue when every tool is current
+        if: steps.check.outputs.outdated == 'false'
+        run: |
+          number=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "\"$ISSUE_TITLE\" in:title" --json number,title --jq --arg title "$ISSUE_TITLE" '.[] | select(.title == $title) | .number' | head -n 1)
+          [[ -z $number ]] || gh issue close "$number" --repo "$GITHUB_REPOSITORY" --comment "Every pinned tool is at its latest upstream version."

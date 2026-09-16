@@ -24,10 +24,10 @@ for platform in $PLATFORMS; do
   [[ -f "php-${version}-${platform}.tar.gz" ]] || fail "missing php-${version}-${platform}.tar.gz"
 done
 
+[[ -f SHA256SUMS ]] || fail "missing SHA256SUMS, run scripts/write-checksums.sh first"
 actual_count=$(find . -maxdepth 1 -type f | wc -l | tr -d ' ')
-((actual_count == ${#expected[@]})) || fail "expected ${#expected[@]} files in $dist, found $actual_count"
-
-sha256sum "${expected[@]}" >SHA256SUMS
+((actual_count == ${#expected[@]} + 1)) || fail "expected ${#expected[@]} tarballs and SHA256SUMS in $dist, found $actual_count files"
+sha256sum --check --strict SHA256SUMS
 
 state=$(release_state "$version")
 

@@ -146,11 +146,16 @@ jobs:
           path: dist
           merge-multiple: true
 
+      - name: Write checksums
+        run: scripts/write-checksums.sh "$PHP_VERSION" dist
+
       - name: Attest build provenance
         if: matrix.release.state != 'published'
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
-          subject-path: dist/php-${{ matrix.release.version }}-*.tar.gz
+          subject-path: |
+            dist/php-${{ matrix.release.version }}-*.tar.gz
+            dist/SHA256SUMS
 
       - name: Publish
         if: matrix.release.state != 'published'

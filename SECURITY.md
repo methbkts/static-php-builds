@@ -4,4 +4,4 @@ Please report vulnerabilities privately through [GitHub's private vulnerability 
 
 Vulnerabilities in PHP itself should be reported to the PHP project: https://github.com/php/php-src/security/policy
 
-New PHP releases, including security releases, are built automatically within a day of being published on php.net.
+New PHP releases, including security releases, are built when the maintainer runs the Release workflow. Ask for a build by opening an issue that names the version.
