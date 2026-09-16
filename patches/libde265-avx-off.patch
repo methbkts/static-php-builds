@@ -1,0 +1,13 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -74,8 +74,8 @@
+ CHECK_FUNCTION_EXISTS(posix_memalign HAVE_POSIX_MEMALIGN)
+ 
+ option(ENABLE_SIMD "Enable SIMD acceleration (SSE on x86, NEON on ARM)" ON)
+-option(ENABLE_AVX2 "Enable AVX2 kernels on x86 (in addition to SSE)" ON)
+-option(ENABLE_AVX512 "Enable AVX-512 kernels on x86 (in addition to AVX2)" ON)
++option(ENABLE_AVX2 "Enable AVX2 kernels on x86 (in addition to SSE)" OFF)
++option(ENABLE_AVX512 "Enable AVX-512 kernels on x86 (in addition to AVX2)" OFF)
+ 
+ include(CheckCSourceCompiles)
+ if(ENABLE_SIMD)

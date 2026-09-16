@@ -92,6 +92,13 @@ if [[ $branch == 8.3 ]]; then
   echo "::endgroup::"
 fi
 
+if [[ ,$extensions, == *,imagick,* ]]; then
+  echo "::group::Patch libde265"
+  "$work/spc" extract libde265
+  patch -p1 -d "$work/source/libde265" <"$ROOT_DIR/patches/libde265-avx-off.patch"
+  echo "::endgroup::"
+fi
+
 echo "::group::Build PHP $version"
 "$work/spc" build "$extensions" \
   --build-cli \
