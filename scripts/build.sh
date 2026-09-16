@@ -62,6 +62,10 @@ echo "::endgroup::"
 extensions=$(extensions_csv)
 branch=${version%.*}
 
+if [[ $branch == 8.6 ]]; then
+  export SPC_MICRO_PATCHES=disable_huge_page_84
+fi
+
 echo "::group::Install build tools"
 "$work/spc" doctor --auto-fix
 echo "::endgroup::"
