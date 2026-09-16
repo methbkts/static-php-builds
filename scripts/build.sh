@@ -16,6 +16,7 @@ validate_platform "$platform"
 validate_source_url "$version" "$source_url"
 
 umask 022
+ulimit -n "$(ulimit -Hn)"
 
 work="$ROOT_DIR/.build/$platform"
 dist="$ROOT_DIR/dist"
