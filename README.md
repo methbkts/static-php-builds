@@ -10,7 +10,7 @@
 
 ## Introduction
 
-Static PHP Builds provides precompiled PHP for [mise](https://mise.jdx.dev). With Static PHP Builds, installing PHP is a download instead of a compile — each release includes the PHP CLI with the extensions Laravel needs, Composer, and Xdebug, for Linux x86_64, Linux aarch64, and macOS on Apple Silicon.
+Static PHP Builds provides precompiled PHP for [mise](https://mise.jdx.dev). With Static PHP Builds, installing PHP is a download instead of a compile — each release includes the PHP CLI with the extensions Laravel needs, Composer, and Xdebug, for Linux x86_64 and Linux aarch64.
 
 The extensions compiled into every build are listed in [`config/extensions.txt`](config/extensions.txt). Linux builds run on any distribution with glibc 2.17 or newer.
 

@@ -3,7 +3,7 @@
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 readonly ROOT_DIR
 
-readonly PLATFORMS="linux-x86_64 linux-aarch64 macos-aarch64"
+readonly PLATFORMS="linux-x86_64 linux-aarch64"
 
 fail() {
   echo "error: $*" >&2
@@ -19,11 +19,7 @@ download() {
 }
 
 sha256_of() {
-  if command -v sha256sum >/dev/null; then
-    sha256sum "$1" | cut -d ' ' -f 1
-  else
-    shasum -a 256 "$1" | cut -d ' ' -f 1
-  fi
+  sha256sum "$1" | cut -d ' ' -f 1
 }
 
 verify_sha256() {

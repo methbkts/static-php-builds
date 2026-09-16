@@ -1,6 +1,6 @@
 # The intention of this project
 
-Static PHP Builds publishes precompiled PHP for `mise`, thus a developer installs PHP with a download and not with a compile. Each GitHub release holds the PHP CLI with the extensions that Laravel needs, Composer and Xdebug, for Linux x86_64, Linux aarch64 and macOS on Apple Silicon. It is an application: a set of Bash scripts and GitHub Actions workflows that build, test, attest and publish each release. No developer installs this repository as a package.
+Static PHP Builds publishes precompiled PHP for `mise`, thus a developer installs PHP with a download and not with a compile. Each GitHub release holds the PHP CLI with the extensions that Laravel needs, Composer and Xdebug, for Linux x86_64 and Linux aarch64. It is an application: a set of Bash scripts and GitHub Actions workflows that build, test, attest and publish each release. No developer installs this repository as a package.
 
 The project has no dependency manager and no install command: the scripts need `bash`, `curl`, `tar`, `jq`, `git` and, on CI, `gh`. Run the lint checks with `shellcheck --external-sources scripts/*.sh stubs/php stubs/composer`, as `.github/workflows/ci.yml` does. Build one version with `scripts/build.sh <version> <php-source-sha256> <platform>`, then test the tarball with `scripts/smoke-test.sh dist/php-<version>-<platform>.tar.gz <version>`.
 

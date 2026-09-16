@@ -47,7 +47,7 @@ fi
 
 notes=$(
   cat <<EOF
-PHP ${version} for Linux (x86_64, aarch64; glibc ${GLIBC_VERSION}+) and macOS (Apple Silicon).
+PHP ${version} for Linux (x86_64, aarch64; glibc ${GLIBC_VERSION}+).
 
 Includes Composer ${COMPOSER_VERSION} and Xdebug (off by default; enable with \`XDEBUG_MODE\`). Built with static-php-cli ${SPC_VERSION} from the official php.net source (SHA-256 verified). The checksum of every other source that went into the build is in \`share/sources.txt\`.
 

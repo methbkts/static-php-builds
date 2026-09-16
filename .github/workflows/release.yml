@@ -55,14 +55,12 @@ jobs:
       fail-fast: false
       matrix:
         release: ${{ fromJSON(needs.plan.outputs.releases) }}
-        platform: [linux-x86_64, linux-aarch64, macos-aarch64]
+        platform: [linux-x86_64, linux-aarch64]
         include:
           - platform: linux-x86_64
             runner: ubuntu-22.04
           - platform: linux-aarch64
             runner: ubuntu-22.04-arm
-          - platform: macos-aarch64
-            runner: macos-15
     env:
       PHP_VERSION: ${{ matrix.release.version }}
       PHP_SHA256: ${{ matrix.release.sha256 }}

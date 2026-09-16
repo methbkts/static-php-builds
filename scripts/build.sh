@@ -35,10 +35,6 @@ linux-aarch64)
   spc_sha256=$SPC_SHA256_LINUX_AARCH64
   export SPC_TARGET="aarch64-linux-gnu.${GLIBC_VERSION}"
   ;;
-macos-aarch64)
-  spc_asset=spc-macos-aarch64.tar.gz
-  spc_sha256=$SPC_SHA256_MACOS_AARCH64
-  ;;
 esac
 
 record_sources() {
@@ -115,7 +111,7 @@ cat >"$stage/share/build-info.txt" <<EOF
 PHP ${version} (${platform})
 PHP source SHA-256: ${php_sha256}
 static-php-cli: ${SPC_VERSION}
-Target: ${SPC_TARGET:-native}
+Target: ${SPC_TARGET}
 Composer: ${COMPOSER_VERSION}
 Extensions: ${extensions}
 Shared extensions: xdebug
@@ -123,7 +119,7 @@ Sources: share/sources.txt
 EOF
 
 tarball="$dist/php-${version}-${platform}.tar.gz"
-COPYFILE_DISABLE=1 tar -czf "$tarball" -C "$stage" bin etc lib libexec share
+tar -czf "$tarball" -C "$stage" bin etc lib libexec share
 echo "::endgroup::"
 
 echo "Built $tarball ($(sha256_of "$tarball"))"

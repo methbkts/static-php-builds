@@ -120,12 +120,10 @@ composer_version=$("$prefix/bin/composer" --version --no-ansi 2>/dev/null)
 [[ $composer_version == "Composer version ${COMPOSER_VERSION} "* ]] || fail "unexpected Composer output: $composer_version"
 check "Composer $COMPOSER_VERSION runs"
 
-if [[ $(uname -s) == Linux ]]; then
-  newest_glibc=$(objdump -T "$prefix/libexec/php" | grep -oE 'GLIBC_[0-9]+\.[0-9]+' | sed 's/GLIBC_//' | sort -V | tail -n 1)
-  if [[ $(printf '%s\n%s\n' "$newest_glibc" "$GLIBC_VERSION" | sort -V | tail -n 1) != "$GLIBC_VERSION" ]]; then
-    fail "binary needs glibc $newest_glibc, newer than the $GLIBC_VERSION baseline"
-  fi
-  check "needs glibc $newest_glibc at most"
+newest_glibc=$(objdump -T "$prefix/libexec/php" | grep -oE 'GLIBC_[0-9]+\.[0-9]+' | sed 's/GLIBC_//' | sort -V | tail -n 1)
+if [[ $(printf '%s\n%s\n' "$newest_glibc" "$GLIBC_VERSION" | sort -V | tail -n 1) != "$GLIBC_VERSION" ]]; then
+  fail "binary needs glibc $newest_glibc, newer than the $GLIBC_VERSION baseline"
 fi
+check "needs glibc $newest_glibc at most"
 
 echo "Smoke test passed for $(basename "$tarball")"
