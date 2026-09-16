@@ -25,7 +25,7 @@ clear_work_except_caches() {
   for path in "$work"/* "$work"/.[!.]*; do
     [[ -e $path ]] || continue
     case $(basename "$path") in
-    buildroot | downloads) ;;
+    buildroot | downloads | pkgroot) ;;
     *) rm -rf "$path" ;;
     esac
   done
@@ -89,7 +89,15 @@ echo "::group::Install build tools"
 echo "::endgroup::"
 
 echo "::group::Download sources"
+mirror_options=()
+for mirror in "${SPC_SOURCE_MIRRORS[@]}"; do
+  read -r mirror_source mirror_sha256 mirror_url <<<"$mirror"
+  validate_sha256 "$mirror_sha256"
+  mirror_options+=("--custom-url=${mirror_source}:${mirror_url}")
+done
+
 "$work/spc" download \
+  "${mirror_options[@]}" \
   --with-php="$branch" \
   --for-extensions="${extensions},xdebug" \
   --custom-url="php-src:${source_url}" \
@@ -99,6 +107,12 @@ echo "::group::Download sources"
 php_source="$work/downloads/php-${version}.tar.xz"
 [[ -f $php_source ]] || fail "PHP source not found at $php_source"
 verify_sha256 "$php_source" "$php_sha256"
+for mirror in "${SPC_SOURCE_MIRRORS[@]}"; do
+  read -r mirror_source mirror_sha256 mirror_url <<<"$mirror"
+  mirror_file="$work/downloads/$(basename "$mirror_url")"
+  [[ -f $mirror_file ]] || fail "source $mirror_source not found at $mirror_file"
+  verify_sha256 "$mirror_file" "$mirror_sha256"
+done
 sources=$(record_sources)
 echo "$sources"
 echo "::endgroup::"

@@ -79,7 +79,8 @@ jobs:
           path: |
             .build/${{ matrix.platform }}/buildroot
             .build/${{ matrix.platform }}/downloads
-          key: libraries-${{ matrix.platform }}-${{ hashFiles('config/build.env', 'config/extensions.txt') }}
+            .build/${{ matrix.platform }}/pkgroot
+          key: libraries-${{ matrix.platform }}-${{ hashFiles('config/build.env', 'config/extensions.txt', 'patches/**') }}
 
       - name: Build
         env:
@@ -93,6 +94,7 @@ jobs:
           path: |
             .build/${{ matrix.platform }}/buildroot
             .build/${{ matrix.platform }}/downloads
+            .build/${{ matrix.platform }}/pkgroot
           key: ${{ steps.libraries.outputs.cache-primary-key }}
 
       - name: Smoke test
