@@ -115,11 +115,15 @@ done
   --with-php="$branch" \
   --for-extensions="${extensions},xdebug" \
   --custom-url="php-src:${source_url}" \
+  --custom-url="xdebug:https://xdebug.org/files/xdebug-${XDEBUG_VERSION}.tgz" \
   --retry=3
 
 php_source="$work/downloads/php-${version}.tar.xz"
 [[ -f $php_source ]] || fail "PHP source not found at $php_source"
 verify_sha256 "$php_source" "$php_sha256"
+xdebug_source="$work/downloads/xdebug-${XDEBUG_VERSION}.tgz"
+[[ -f $xdebug_source ]] || fail "Xdebug source not found at $xdebug_source"
+verify_sha256 "$xdebug_source" "$XDEBUG_SHA256"
 for mirror in "${SPC_SOURCE_MIRRORS[@]}"; do
   read -r mirror_source mirror_sha256 mirror_url <<<"$mirror"
   mirror_file="$work/downloads/$(basename "$mirror_url")"
@@ -183,6 +187,7 @@ static-php-cli: ${SPC_VERSION}
 Target: ${SPC_TARGET}
 Composer: ${COMPOSER_VERSION}
 Extensions: ${extensions}
+Xdebug: ${XDEBUG_VERSION}
 Shared extensions: xdebug
 Sources: share/sources.txt
 EOF

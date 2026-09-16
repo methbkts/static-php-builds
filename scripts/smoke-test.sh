@@ -54,8 +54,9 @@ PHP
 [[ -z $missing ]] || fail "missing extensions: $missing"
 check "all extensions in config/extensions.txt are loaded"
 
-"$php" -r 'exit(extension_loaded("xdebug") ? 0 : 1);' || fail "Xdebug is not loaded"
-check "Xdebug loads"
+xdebug_version=$("$php" -r 'echo phpversion("xdebug");')
+[[ $xdebug_version == "$XDEBUG_VERSION" ]] || fail "expected Xdebug $XDEBUG_VERSION, got [$xdebug_version]"
+check "Xdebug $xdebug_version loads"
 
 # shellcheck disable=SC2016 # PHP code, not shell
 default_modes=$(env -u XDEBUG_MODE "$php" -r 'echo implode(",", xdebug_info("mode"));')
