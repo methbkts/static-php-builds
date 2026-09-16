@@ -1,5 +1,6 @@
 /.build/
 /dist/
+/log/
 
 /.claude/skills/
 /.agents/skills/
