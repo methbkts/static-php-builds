@@ -11,9 +11,11 @@
 
 ## Introduction
 
-Static PHP Builds provides precompiled PHP for [mise](https://mise.jdx.dev). With Static PHP Builds, installing PHP is a download instead of a compile — each release includes the PHP CLI with the extensions Laravel needs, Composer, and Xdebug, for Linux x86_64 and Linux aarch64.
+Static PHP Builds provides precompiled PHP for [mise](https://mise.jdx.dev). With Static PHP Builds, installing PHP is a download instead of a compile — each release includes the PHP CLI, Composer, and Xdebug, for Linux x86_64 and Linux aarch64.
 
-The extensions compiled into every build are listed in [`config/extensions.txt`](config/extensions.txt). Linux builds run on any distribution with glibc 2.17 or newer.
+The builds are not tied to a framework. They include the extensions that Laravel, Symfony, WordPress, and most other PHP applications need: database drivers for MySQL, PostgreSQL, SQLite, and SQL Server, Redis and MongoDB clients, image processing with GD and Imagick, intl, sodium, and more.
+
+The full list of extensions compiled into every build is in [`config/extensions.txt`](config/extensions.txt). Linux builds run on any distribution with glibc 2.17 or newer.
 
 ## Installation
 
@@ -52,7 +54,7 @@ Xdebug is loaded in every build, but it is turned off by default, so PHP runs at
 To enable Xdebug for a single command, set the variable inline:
 
 ```sh
-XDEBUG_MODE=coverage php artisan test --coverage
+XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-text
 ```
 
 To enable Xdebug for a project, add the variable to the project's `mise.toml` file. mise sets it whenever you are inside that directory:
@@ -74,8 +76,8 @@ You may enable several modes at once by separating them with commas, such as `XD
 
 With `XDEBUG_MODE=debug` set, start listening for debug connections in your editor (the "PHP Debug" extension in VS Code, or "Start Listening for PHP Debug Connections" in PhpStorm), then trigger a debugging session:
 
-- **Console commands:** set the `XDEBUG_TRIGGER` environment variable, e.g. `XDEBUG_MODE=debug XDEBUG_TRIGGER=1 php artisan my:command`.
-- **Browser requests:** use a browser extension such as Xdebug Helper, which sets the `XDEBUG_SESSION` cookie. When using `php artisan serve`, set `XDEBUG_MODE` before starting the server so the requests it serves inherit it.
+- **Console commands:** set the `XDEBUG_TRIGGER` environment variable, e.g. `XDEBUG_MODE=debug XDEBUG_TRIGGER=1 php script.php`.
+- **Browser requests:** use a browser extension such as Xdebug Helper, which sets the `XDEBUG_SESSION` cookie. When using a server built on PHP's built-in web server, such as `php -S localhost:8000 -t public` or `php artisan serve`, set `XDEBUG_MODE` before starting the server so the requests it serves inherit it.
 
 If you would like every request and command to connect to your editor without a trigger, also set `XDEBUG_CONFIG="start_with_request=yes"`.
 
