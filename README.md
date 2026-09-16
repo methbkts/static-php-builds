@@ -99,7 +99,7 @@ sha256sum --check --ignore-missing SHA256SUMS
 
 ## How Releases Are Built
 
-A scheduled workflow runs every day at 09:00 UTC. For each branch in [`config/php-branches.txt`](config/php-branches.txt), it looks up the newest release on php.net and builds it only if this repository does not have a release for it yet. A branch without a stable release, such as 8.6 before its general availability, uses its newest pre-release from qa.php.net:
+The **Release** workflow builds each release. For each branch in [`config/php-branches.txt`](config/php-branches.txt), it looks up the newest release on php.net and builds it only if this repository does not have a release for it yet. A branch without a stable release, such as 8.6 before its general availability, uses its newest pre-release from qa.php.net:
 
 1. The PHP source is downloaded from php.net and verified against the SHA-256 that php.net publishes.
 2. PHP is compiled with a pinned, checksum-verified [static-php-cli](https://github.com/crazywhalecc/static-php-cli) on GitHub-hosted runners.
@@ -108,11 +108,9 @@ A scheduled workflow runs every day at 09:00 UTC. For each branch in [`config/ph
 
 All pinned versions and checksums live in [`config/build.env`](config/build.env). The checksum of every other source that went into a build is recorded in the release's `share/sources.txt` file.
 
-Security releases of PHP follow the same schedule, so they are built within a day of being published on php.net.
+### Running the Release Workflow
 
-### Building Releases Manually
-
-You may also run the **Release** workflow yourself. The `version` input accepts a PHP branch, an exact version, or `all`:
+You run the **Release** workflow yourself. The `version` input accepts a PHP branch, an exact version, or `all`:
 
 ```sh
 gh workflow run release.yml -f version=8.5
@@ -120,9 +118,9 @@ gh workflow run release.yml -f version=8.6.0beta3
 gh workflow run release.yml -f version=all
 ```
 
-`all` builds the newest release of every branch, including the releases that are already published. Leaving `version` empty builds only the releases that are missing, the same as the schedule.
+`all` builds the newest release of every branch, including the releases that are already published. Leaving `version` empty builds only the releases that are missing.
 
-By default, a manual run only builds and smoke tests. If you would like to publish the result as a GitHub release, pass the `publish` input as well. A version that is already published is left as it is, because releases in this repository cannot change after they are published:
+By default, a run only builds and smoke tests. If you would like to publish the result as a GitHub release, pass the `publish` input as well. A version that is already published is left as it is, because releases in this repository cannot change after they are published:
 
 ```sh
 gh workflow run release.yml -f version=all -f publish=true

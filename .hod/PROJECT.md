@@ -5,7 +5,7 @@ Static PHP Builds publishes precompiled PHP for `mise`, thus a developer install
 The project has no dependency manager and no install command: the scripts need `bash`, `curl`, `tar`, `jq`, `git` and, on CI, `gh`. Run the lint checks with `shellcheck --external-sources bin/build scripts/*.sh stubs/php stubs/composer`, as `.github/workflows/ci.yml` does. Build and smoke test one branch on this machine with `bin/build <branch>`. Build one version with `scripts/build.sh <version> <php-source-sha256> <platform> <source-url>`, then test the tarball with `scripts/smoke-test.sh dist/php-<version>-<platform>.tar.gz <version>`.
 
 - `bin/` — `build`, the command that builds and smoke tests one PHP branch on this machine
-- `.github/` — the workflows: `ci.yml` lints, `release.yml` plans, builds, smoke tests and publishes each release on a daily schedule
+- `.github/` — the workflows: `ci.yml` lints, `release.yml` plans, builds, smoke tests and publishes each release when a user starts it
 - `config/` — the pinned versions and checksums in `build.env`, the PHP extensions in `extensions.txt` and the PHP branches in `php-branches.txt`
 - `patches/` — the patches that `scripts/build.sh` applies to a source before the build
 - `scripts/` — the Bash scripts that resolve a PHP version, plan the releases, build, smoke test and publish

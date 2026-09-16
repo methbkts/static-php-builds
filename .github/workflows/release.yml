@@ -1,8 +1,6 @@
 name: Release
 
 on:
-  schedule:
-    - cron: "0 9 * * *"
   workflow_dispatch:
     inputs:
       version:
@@ -120,7 +118,7 @@ jobs:
   publish:
     name: Publish PHP ${{ matrix.release.version }}
     needs: [plan, build]
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.publish)
+    if: github.ref == 'refs/heads/main' && inputs.publish
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     environment: release

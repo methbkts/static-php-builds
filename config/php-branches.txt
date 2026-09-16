@@ -1,4 +1,4 @@
-# PHP branches kept up to date. The scheduled release builds the newest
+# PHP branches kept up to date. The release workflow builds the newest
 # patch release of each branch that does not have a published release yet.
 8.2
 8.3
