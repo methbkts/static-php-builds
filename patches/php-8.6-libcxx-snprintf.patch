@@ -1,0 +1,15 @@
+--- a/main/snprintf.h
++++ b/main/snprintf.h
+@@ -66,6 +66,12 @@
+ 
+ #include <stdbool.h>
+ 
++#ifdef __cplusplus
++extern "C++" {
++#include <locale>
++}
++#endif
++
+ BEGIN_EXTERN_C()
+ PHPAPI int ap_php_slprintf(char *buf, size_t len, const char *format,...) ZEND_ATTRIBUTE_FORMAT(printf, 3, 4);
+ PHPAPI int ap_php_vslprintf(char *buf, size_t len, const char *format, va_list ap);

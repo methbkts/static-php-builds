@@ -130,10 +130,16 @@ sources=$(record_sources)
 echo "$sources"
 echo "::endgroup::"
 
-if [[ $branch == 8.3 ]]; then
+php_patch=
+case $branch in
+8.3) php_patch=php-8.3-avx512-cache.patch ;;
+8.6) php_patch=php-8.6-libcxx-snprintf.patch ;;
+esac
+
+if [[ -n $php_patch ]]; then
   echo "::group::Patch PHP $version"
   "$work/spc" extract php-src
-  patch -p1 -d "$work/source/php-src" <"$ROOT_DIR/patches/php-8.3-avx512-cache.patch"
+  patch -p1 -d "$work/source/php-src" <"$ROOT_DIR/patches/$php_patch"
   echo "::endgroup::"
 fi
 
