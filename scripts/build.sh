@@ -85,6 +85,13 @@ sources=$(record_sources)
 echo "$sources"
 echo "::endgroup::"
 
+if [[ $branch == 8.3 ]]; then
+  echo "::group::Patch PHP $version"
+  "$work/spc" extract php-src
+  patch -p1 -d "$work/source/php-src" <"$ROOT_DIR/patches/php-8.3-avx512-cache.patch"
+  echo "::endgroup::"
+fi
+
 echo "::group::Build PHP $version"
 "$work/spc" build "$extensions" \
   --build-cli \
