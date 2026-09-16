@@ -20,7 +20,25 @@ umask 022
 work="$ROOT_DIR/.build/$platform"
 dist="$ROOT_DIR/dist"
 
-rm -rf "$work"
+clear_work_except_caches() {
+  local path
+  for path in "$work"/* "$work"/.[!.]*; do
+    [[ -e $path ]] || continue
+    case $(basename "$path") in
+    buildroot | downloads) ;;
+    *) rm -rf "$path" ;;
+    esac
+  done
+}
+
+remove_cached_php() {
+  rm -rf "$work/buildroot/bin/php" "$work/buildroot/bin/php-config" "$work/buildroot/bin/phpize" \
+    "$work/buildroot/include/php" "$work/buildroot/lib/php" "$work/buildroot/modules"
+  rm -f "$work"/downloads/php-*.tar.xz
+}
+
+clear_work_except_caches
+remove_cached_php
 mkdir -p "$work" "$dist"
 cd "$work"
 

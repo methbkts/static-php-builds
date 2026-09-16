@@ -72,8 +72,28 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Restore libraries
+        id: libraries
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .build/${{ matrix.platform }}/buildroot
+            .build/${{ matrix.platform }}/downloads
+          key: libraries-${{ matrix.platform }}-${{ hashFiles('config/build.env', 'config/extensions.txt') }}
+
       - name: Build
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: scripts/build.sh "$PHP_VERSION" "$PHP_SHA256" "$PLATFORM" "$PHP_SOURCE_URL"
+
+      - name: Save libraries
+        if: steps.libraries.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .build/${{ matrix.platform }}/buildroot
+            .build/${{ matrix.platform }}/downloads
+          key: ${{ steps.libraries.outputs.cache-primary-key }}
 
       - name: Smoke test
         run: scripts/smoke-test.sh "dist/php-$PHP_VERSION-$PLATFORM.tar.gz" "$PHP_VERSION"
