@@ -101,12 +101,12 @@ sha256sum --check --ignore-missing SHA256SUMS
 
 The **Release** workflow builds each release. For each branch in [`config/php-branches.txt`](config/php-branches.txt), it looks up the newest release on php.net and builds it only if this repository does not have a release for it yet. A branch without a stable release, such as 8.6 before its general availability, uses its newest pre-release from qa.php.net:
 
-1. The PHP source is downloaded from php.net and verified against the SHA-256 that php.net publishes.
-2. PHP is compiled with a pinned, checksum-verified [static-php-cli](https://github.com/crazywhalecc/static-php-cli) on GitHub-hosted runners.
+1. The PHP source is downloaded from php.net and verified against the SHA-256 that php.net publishes and against the GPG signature of a PHP release manager. The release manager keys are in [`config/php-release-keys.asc`](config/php-release-keys.asc).
+2. PHP is compiled with a pinned, checksum-verified [static-php-cli](https://github.com/crazywhalecc/static-php-cli) on GitHub-hosted runners. A run that publishes compiles every library from source and restores no cache.
 3. Each build is unpacked and smoke tested: the PHP version, the extensions, Xdebug, Composer, SQLite, intl, HTTPS with the system CA certificates, and the glibc baseline.
 4. The files receive a build attestation and are published as a GitHub release named after the PHP version.
 
-All pinned versions and checksums live in [`config/build.env`](config/build.env). The checksum of every other source that went into a build is recorded in the release's `share/sources.txt` file.
+All pinned versions and checksums live in [`config/build.env`](config/build.env). Every other source that goes into a build, down to the compiler toolchain, must match its checksum or commit in [`config/sources.lock`](config/sources.lock), and the build stops when one differs. The release's `share/sources.txt` file records the same list.
 
 ### Running the Release Workflow
 

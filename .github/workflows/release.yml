@@ -72,13 +72,14 @@ jobs:
 
       - name: Restore libraries
         id: libraries
+        if: ${{ !inputs.publish }}
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             .build/${{ matrix.platform }}/buildroot
             .build/${{ matrix.platform }}/downloads
             .build/${{ matrix.platform }}/pkgroot
-          key: libraries-${{ matrix.platform }}-${{ hashFiles('config/build.env', 'config/extensions.txt', 'patches/**') }}
+          key: libraries-${{ matrix.platform }}-${{ hashFiles('config/build.env', 'config/extensions.txt', 'config/sources.lock', 'patches/**') }}
 
       - name: Build
         env:
@@ -95,7 +96,7 @@ jobs:
           retention-days: 7
 
       - name: Save libraries
-        if: steps.libraries.outputs.cache-hit != 'true'
+        if: ${{ !inputs.publish && steps.libraries.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |

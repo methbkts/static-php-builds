@@ -6,7 +6,7 @@ The project has no dependency manager and no install command: the scripts need `
 
 - `bin/` — `build`, the command that builds and smoke tests one PHP branch on this machine
 - `.github/` — the workflows: `ci.yml` lints, `release.yml` plans, builds, smoke tests and publishes each release when a user starts it, `updates.yml` compares the pinned tools with upstream each week and keeps one issue open while a tool is behind
-- `config/` — the pinned versions and checksums in `build.env`, the PHP extensions in `extensions.txt` and the PHP branches in `php-branches.txt`
+- `config/` — the pinned versions and checksums in `build.env`, the PHP extensions in `extensions.txt`, the PHP branches in `php-branches.txt`, the checksum or commit of every other build source in `sources.lock` and the PHP release manager keys in `php-release-keys.asc` with their branches in `php-release-keys.txt`
 - `patches/` — the patches that `scripts/build.sh` applies to a source before the build
 - `scripts/` — the Bash scripts that resolve a PHP version, plan the releases, build, smoke test and publish
 - `stubs/` — the files that go into each release: the `php` and `composer` wrappers and `xdebug.ini`

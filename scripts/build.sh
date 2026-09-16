@@ -49,6 +49,18 @@ spc_download() {
   fi
 }
 
+verify_sources_lock() {
+  local sources=$1 php_source=$2
+  local lock="$ROOT_DIR/config/sources.lock"
+  local drift
+  drift=$(grep -vF "  $(basename "$php_source")" <<<"$sources" | grep -vxF -f "$lock" || true)
+  [[ -n $drift ]] || return 0
+  mkdir -p "$work/log"
+  echo "$drift" >"$work/log/sources.drift"
+  echo "$drift" >&2
+  fail "these sources are not in config/sources.lock; review the upstream change, then replace their lines in the lock"
+}
+
 print_build_log_on_failure() {
   local status=$?
   local log="$work/log/spc.shell.log"
@@ -132,6 +144,10 @@ spc_download \
 php_source="$work/downloads/php-${version}.tar.xz"
 [[ -f $php_source ]] || fail "PHP source not found at $php_source"
 verify_sha256 "$php_source" "$php_sha256"
+php_signature="$work/php-${version}.tar.xz.asc"
+download "${source_url}.asc" "$php_signature"
+php_signer=$(verify_php_signature "$version" "$php_source" "$php_signature")
+echo "PHP source signed by $php_signer"
 xdebug_source="$work/downloads/xdebug-${XDEBUG_VERSION}.tgz"
 [[ -f $xdebug_source ]] || fail "Xdebug source not found at $xdebug_source"
 verify_sha256 "$xdebug_source" "$XDEBUG_SHA256"
@@ -143,6 +159,7 @@ for mirror in "${SPC_SOURCE_MIRRORS[@]}"; do
 done
 sources=$(record_sources)
 echo "$sources"
+verify_sources_lock "$sources" "$php_source"
 echo "::endgroup::"
 
 php_patch=
@@ -193,6 +210,7 @@ echo "$sources" >"$stage/share/sources.txt"
 cat >"$stage/share/build-info.txt" <<EOF
 PHP ${version} (${platform})
 PHP source SHA-256: ${php_sha256}
+PHP source signed by: ${php_signer}
 Commit: ${GITHUB_SHA:-$(git -C "$ROOT_DIR" rev-parse HEAD)}
 static-php-cli: ${SPC_VERSION}
 Target: ${SPC_TARGET}
@@ -204,7 +222,7 @@ Sources: share/sources.txt
 EOF
 
 tarball="$dist/php-${version}-${platform}.tar.gz"
-tar -czf "$tarball" -C "$stage" bin etc lib libexec share
+tar --owner=0 --group=0 --numeric-owner -czf "$tarball" -C "$stage" bin etc lib libexec share
 echo "::endgroup::"
 
 echo "Built $tarball ($(sha256_of "$tarball"))"
