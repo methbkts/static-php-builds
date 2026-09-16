@@ -7,6 +7,8 @@ source "$(dirname "$0")/../config/build.env"
 
 : "${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}"
 : "${GITHUB_SHA:?GITHUB_SHA is required}"
+: "${GITHUB_SERVER_URL:?GITHUB_SERVER_URL is required}"
+: "${GITHUB_RUN_ID:?GITHUB_RUN_ID is required}"
 
 version=${1:-}
 dist=${2:-}
@@ -50,6 +52,8 @@ notes=$(
 PHP ${version} for Linux (x86_64, aarch64; glibc ${GLIBC_VERSION}+).
 
 Includes Composer ${COMPOSER_VERSION} and Xdebug (off by default; enable with \`XDEBUG_MODE\`). Built with static-php-cli ${SPC_VERSION} from the official php.net source (SHA-256 verified). The checksum of every other source that went into the build is in \`share/sources.txt\`.
+
+Built from ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA} in ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}.
 
 Extensions: $(extensions_csv "$version" | sed 's/,/, /g')
 

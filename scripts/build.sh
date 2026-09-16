@@ -178,6 +178,7 @@ echo "$sources" >"$stage/share/sources.txt"
 cat >"$stage/share/build-info.txt" <<EOF
 PHP ${version} (${platform})
 PHP source SHA-256: ${php_sha256}
+Commit: ${GITHUB_SHA:-$(git -C "$ROOT_DIR" rev-parse HEAD)}
 static-php-cli: ${SPC_VERSION}
 Target: ${SPC_TARGET}
 Composer: ${COMPOSER_VERSION}
