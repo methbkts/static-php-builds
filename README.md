@@ -40,11 +40,37 @@ php = "8.4"
 
 ## Xdebug
 
-Xdebug is loaded in every build. By default, debugging only starts when a trigger is present, such as the `XDEBUG_TRIGGER` environment variable or the `XDEBUG_SESSION` cookie. If you would like to run PHP without Xdebug entirely, set the `XDEBUG_MODE` environment variable to `off`:
+Xdebug is loaded in every build, but it is turned off by default, so PHP runs at full speed. To enable it, set the `XDEBUG_MODE` environment variable to the [modes](https://xdebug.org/docs/all_settings#mode) you need, such as `debug` for step debugging or `coverage` for code coverage. `XDEBUG_MODE` always takes precedence over the bundled configuration, so you never need to edit files inside mise's install directory.
+
+To enable Xdebug for a single command, set the variable inline:
 
 ```sh
-XDEBUG_MODE=off php artisan test
+XDEBUG_MODE=coverage php artisan test --coverage
 ```
+
+To enable Xdebug for a project, add the variable to the project's `mise.toml` file. mise sets it whenever you are inside that directory:
+
+```toml
+[env]
+XDEBUG_MODE = "debug"
+```
+
+To enable Xdebug everywhere, export the variable from your shell's startup file, such as `~/.bashrc`:
+
+```sh
+export XDEBUG_MODE=debug
+```
+
+You may enable several modes at once by separating them with commas, such as `XDEBUG_MODE=debug,coverage`.
+
+### Step Debugging
+
+With `XDEBUG_MODE=debug` set, start listening for debug connections in your editor (the "PHP Debug" extension in VS Code, or "Start Listening for PHP Debug Connections" in PhpStorm), then trigger a debugging session:
+
+- **Console commands:** set the `XDEBUG_TRIGGER` environment variable, e.g. `XDEBUG_MODE=debug XDEBUG_TRIGGER=1 php artisan my:command`.
+- **Browser requests:** use a browser extension such as Xdebug Helper, which sets the `XDEBUG_SESSION` cookie. When using `php artisan serve`, set `XDEBUG_MODE` before starting the server so the requests it serves inherit it.
+
+If you would like every request and command to connect to your editor without a trigger, also set `XDEBUG_CONFIG="start_with_request=yes"`.
 
 The `bin/php` wrapper adds `etc/php/conf.d` to `PHP_INI_SCAN_DIR`, so any scan directory you configure yourself is still read.
 

@@ -57,6 +57,16 @@ check "all extensions in config/extensions.txt are loaded"
 "$php" -r 'exit(extension_loaded("xdebug") ? 0 : 1);' || fail "Xdebug is not loaded"
 check "Xdebug loads"
 
+# shellcheck disable=SC2016 # PHP code, not shell
+default_modes=$(env -u XDEBUG_MODE "$php" -r 'echo implode(",", xdebug_info("mode"));')
+[[ -z $default_modes ]] || fail "Xdebug should be off by default, but these modes are active: $default_modes"
+check "Xdebug is off by default"
+
+# shellcheck disable=SC2016 # PHP code, not shell
+enabled_modes=$(XDEBUG_MODE=debug,coverage "$php" -r '$modes = xdebug_info("mode"); sort($modes); echo implode(",", $modes);')
+[[ $enabled_modes == "coverage,debug" ]] || fail "XDEBUG_MODE=debug,coverage did not enable Xdebug, active modes: $enabled_modes"
+check "XDEBUG_MODE enables Xdebug"
+
 "$php" <<'PHP' || fail "PDO SQLite does not work"
 <?php
 $db = new PDO("sqlite::memory:");
