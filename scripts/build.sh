@@ -38,8 +38,20 @@ remove_cached_php() {
   rm -f "$work"/downloads/php-*.tar.xz
 }
 
+print_build_log_on_failure() {
+  local status=$?
+  local log="$work/log/spc.shell.log"
+  if ((status != 0)) && [[ -f $log ]]; then
+    echo "::endgroup::"
+    echo "Last 150 lines of $log:"
+    tail -n 150 "$log"
+  fi
+  return "$status"
+}
+
 clear_work_except_caches
 remove_cached_php
+trap print_build_log_on_failure EXIT
 mkdir -p "$work" "$dist"
 cd "$work"
 
@@ -83,6 +95,7 @@ branch=${version%.*}
 
 if [[ $branch == 8.6 ]]; then
   export SPC_MICRO_PATCHES=disable_huge_page_84
+  export SPC_CMD_PREFIX_PHP_CONFIGURE="./configure --prefix= --with-valgrind=no --disable-shared --enable-static --disable-all --disable-phpdbg --enable-rtld-now --enable-re2c-cgoto --disable-rpath --enable-pic"
 fi
 
 echo "::group::Install build tools"
@@ -102,8 +115,7 @@ done
   --with-php="$branch" \
   --for-extensions="${extensions},xdebug" \
   --custom-url="php-src:${source_url}" \
-  --retry=3 \
-  --debug
+  --retry=3
 
 php_source="$work/downloads/php-${version}.tar.xz"
 [[ -f $php_source ]] || fail "PHP source not found at $php_source"
@@ -136,8 +148,7 @@ echo "::group::Build PHP $version"
 "$work/spc" build "$extensions" \
   --build-cli \
   --build-shared=xdebug \
-  --with-suggested-libs \
-  --debug
+  --with-suggested-libs
 echo "::endgroup::"
 
 echo "::group::Package"
