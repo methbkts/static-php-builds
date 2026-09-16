@@ -31,8 +31,9 @@ install_build_tools_with_pacman() {
 platform=$(platform_of_this_machine)
 install_build_tools_with_pacman
 
-if [[ -z ${GITHUB_TOKEN:-} ]] && command -v gh >/dev/null && token=$(gh auth token 2>/dev/null); then
-  export GITHUB_TOKEN=$token
+github_token=${GITHUB_TOKEN:-}
+if [[ -z $github_token ]] && command -v gh >/dev/null; then
+  github_token=$(gh auth token 2>/dev/null || true)
 fi
 
 resolved=$("$ROOT_DIR/scripts/resolve-php.sh" "$request")
@@ -41,5 +42,5 @@ sha256=$(sed -n 's/^sha256=//p' <<<"$resolved")
 url=$(sed -n 's/^url=//p' <<<"$resolved")
 
 echo "Building PHP $version for $platform"
-"$ROOT_DIR/scripts/build.sh" "$version" "$sha256" "$platform" "$url"
+GITHUB_TOKEN=$github_token "$ROOT_DIR/scripts/build.sh" "$version" "$sha256" "$platform" "$url"
 "$ROOT_DIR/scripts/smoke-test.sh" "$ROOT_DIR/dist/php-$version-$platform.tar.gz" "$version"

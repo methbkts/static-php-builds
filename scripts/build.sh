@@ -15,6 +15,9 @@ validate_sha256 "$php_sha256"
 validate_platform "$platform"
 validate_source_url "$version" "$source_url"
 
+github_token=${GITHUB_TOKEN:-}
+unset GITHUB_TOKEN
+
 umask 022
 ulimit -n "$(ulimit -Hn)"
 
@@ -36,6 +39,14 @@ remove_cached_php() {
   rm -rf "$work/buildroot/bin/php" "$work/buildroot/bin/php-config" "$work/buildroot/bin/phpize" \
     "$work/buildroot/include/php" "$work/buildroot/lib/php" "$work/buildroot/modules"
   rm -f "$work"/downloads/php-*.tar.xz
+}
+
+spc_download() {
+  if [[ -n $github_token ]]; then
+    GITHUB_TOKEN=$github_token "$work/spc" download "$@"
+  else
+    "$work/spc" download "$@"
+  fi
 }
 
 print_build_log_on_failure() {
@@ -110,7 +121,7 @@ for mirror in "${SPC_SOURCE_MIRRORS[@]}"; do
   mirror_options+=("--custom-url=${mirror_source}:${mirror_url}")
 done
 
-"$work/spc" download \
+spc_download \
   "${mirror_options[@]}" \
   --with-php="$branch" \
   --for-extensions="${extensions},xdebug" \
