@@ -16,7 +16,6 @@ gmp
 iconv
 igbinary
 imagick
-imap
 intl
 ldap
 mbregex
