@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Runs the bundled PHP binary with the ini files that ship next to it (Xdebug).
+# Set XDEBUG_MODE=off to run without Xdebug's overhead.
+
+set -e
+
+self=$0
+while [ -L "$self" ]; do
+  target=$(readlink "$self")
+  case $target in
+  /*) self=$target ;;
+  *) self=$(dirname "$self")/$target ;;
+  esac
+done
+
+prefix=$(cd "$(dirname "$self")/.." && pwd -P)
+conf_dir="$prefix/etc/php/conf.d"
+
+# Exported so PHP processes spawned through PHP_BINARY (artisan serve, composer) keep the same setup
+export STATIC_PHP_PREFIX="$prefix"
+
+case ":${PHP_INI_SCAN_DIR:-}:" in
+*":$conf_dir:"*) ;;
+*) export PHP_INI_SCAN_DIR="$conf_dir${PHP_INI_SCAN_DIR:+:$PHP_INI_SCAN_DIR}" ;;
+esac
+
+exec "$prefix/libexec/php" "$@"

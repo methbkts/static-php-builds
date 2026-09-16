@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# Runs the bundled Composer with the bundled PHP.
+
+set -e
+
+self=$0
+while [ -L "$self" ]; do
+  target=$(readlink "$self")
+  case $target in
+  /*) self=$target ;;
+  *) self=$(dirname "$self")/$target ;;
+  esac
+done
+
+prefix=$(cd "$(dirname "$self")/.." && pwd -P)
+
+exec "$prefix/bin/php" "$prefix/libexec/composer.phar" "$@"
