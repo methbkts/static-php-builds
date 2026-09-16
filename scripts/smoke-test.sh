@@ -34,7 +34,7 @@ if grep -qiE 'warning|error|cannot load' <<<"$startup"; then
 fi
 check "starts without warnings"
 
-missing=$("$php" -- "$(extensions_csv)" <<'PHP'
+missing=$("$php" -- "$(extensions_csv "$version")" <<'PHP'
 <?php
 $aliases = ["opcache" => "Zend OPcache"];
 $missing = [];

@@ -15,7 +15,7 @@ Static PHP Builds provides precompiled PHP for [mise](https://mise.jdx.dev). Wit
 
 The builds are not tied to a framework. They include the extensions that Laravel, Symfony, WordPress, and most other PHP applications need: database drivers for MySQL, PostgreSQL, SQLite, and SQL Server, Redis and MongoDB clients, image processing with GD and Imagick, intl, sodium, and more.
 
-The full list of extensions compiled into every build is in [`config/extensions.txt`](config/extensions.txt). Linux builds run on any distribution with glibc 2.17 or newer.
+The full list of extensions is in [`config/extensions.txt`](config/extensions.txt). A PHP branch that an extension does not support yet builds without it, as listed in [`config/extensions-excluded.txt`](config/extensions-excluded.txt). Linux builds run on any distribution with glibc 2.17 or newer.
 
 ## Installation
 

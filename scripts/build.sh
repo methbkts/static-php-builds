@@ -90,7 +90,7 @@ chmod 0755 "$work/spc"
 "$work/spc" --version
 echo "::endgroup::"
 
-extensions=$(extensions_csv)
+extensions=$(extensions_csv "$version")
 branch=${version%.*}
 
 if [[ $branch == 8.6 ]]; then

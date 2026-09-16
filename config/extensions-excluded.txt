@@ -1,0 +1,2 @@
+8.6 igbinary
+8.6 imagick

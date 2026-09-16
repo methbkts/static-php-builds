@@ -75,5 +75,8 @@ release_state() {
 }
 
 extensions_csv() {
-  grep -Ev '^[[:space:]]*(#|$)' "$ROOT_DIR/config/extensions.txt" | paste -sd , -
+  local branch=${1%.*}
+  local excluded
+  excluded=$(awk -v branch="$branch" '$1 == branch { print $2 }' "$ROOT_DIR/config/extensions-excluded.txt")
+  grep -Ev '^[[:space:]]*(#|$)' "$ROOT_DIR/config/extensions.txt" | grep -vxF -e "$excluded" | paste -sd , -
 }
