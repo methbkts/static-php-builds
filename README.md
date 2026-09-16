@@ -6,6 +6,7 @@
 - [Verifying a Download](#verifying-a-download)
 - [How Releases Are Built](#how-releases-are-built)
   - [Building Releases Manually](#building-releases-manually)
+  - [Building Locally](#building-locally)
 - [Release Layout](#release-layout)
 
 ## Introduction
@@ -124,6 +125,16 @@ By default, a manual run only builds and smoke tests. If you would like to publi
 ```sh
 gh workflow run release.yml -f version=all -f publish=true
 ```
+
+### Building Locally
+
+To check that a build works on your own Linux machine, run `bin/build` with a PHP branch or version. It resolves the newest release on php.net, builds it for your CPU architecture, and smoke tests the result:
+
+```sh
+bin/build 8.4
+```
+
+The tarball lands in `dist/`. The first run installs the build tools that static-php-cli needs, which may ask for your password.
 
 ## Release Layout
 

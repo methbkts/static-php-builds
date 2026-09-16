@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+source "$(dirname "$0")/../scripts/lib.sh"
+
+request=${1:-}
+
+[[ -n $request ]] || fail "usage: bin/build <branch|version>, for example: bin/build 8.4"
+
+platform_of_this_machine() {
+  [[ $(uname -s) == Linux ]] || fail "this machine runs $(uname -s), and the builds run on Linux only"
+  case $(uname -m) in
+  x86_64) echo linux-x86_64 ;;
+  aarch64 | arm64) echo linux-aarch64 ;;
+  *) fail "unsupported machine: $(uname -m)" ;;
+  esac
+}
+
+install_build_tools_with_pacman() {
+  command -v pacman >/dev/null || return 0
+
+  local missing=()
+  mapfile -t missing < <(pacman -T base-devel cmake re2c git unzip bzip2 xz || true)
+  ((${#missing[@]} > 0)) || return 0
+
+  echo "Installing build tools: ${missing[*]}"
+  sudo pacman -S --needed --noconfirm "${missing[@]}"
+}
+
+platform=$(platform_of_this_machine)
+install_build_tools_with_pacman
+
+if [[ -z ${GITHUB_TOKEN:-} ]] && command -v gh >/dev/null && token=$(gh auth token 2>/dev/null); then
+  export GITHUB_TOKEN=$token
+fi
+
+resolved=$("$ROOT_DIR/scripts/resolve-php.sh" "$request")
+version=$(sed -n 's/^version=//p' <<<"$resolved")
+sha256=$(sed -n 's/^sha256=//p' <<<"$resolved")
+url=$(sed -n 's/^url=//p' <<<"$resolved")
+
+echo "Building PHP $version for $platform"
+"$ROOT_DIR/scripts/build.sh" "$version" "$sha256" "$platform" "$url"
+"$ROOT_DIR/scripts/smoke-test.sh" "$ROOT_DIR/dist/php-$version-$platform.tar.gz" "$version"

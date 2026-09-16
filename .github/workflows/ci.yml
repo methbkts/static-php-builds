@@ -28,7 +28,7 @@ jobs:
           persist-credentials: false
 
       - name: ShellCheck
-        run: shellcheck --external-sources scripts/*.sh stubs/php stubs/composer
+        run: shellcheck --external-sources bin/build scripts/*.sh stubs/php stubs/composer
 
       - name: actionlint
         run: |
