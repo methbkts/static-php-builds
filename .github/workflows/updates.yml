@@ -48,7 +48,7 @@ jobs:
             echo
             echo "Report from $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID."
           } >"$RUNNER_TEMP/body.md"
-          number=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "\"$ISSUE_TITLE\" in:title" --json number,title --jq --arg title "$ISSUE_TITLE" '.[] | select(.title == $title) | .number' | head -n 1)
+          number=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "\"$ISSUE_TITLE\" in:title" --json number,title | jq --raw-output --arg title "$ISSUE_TITLE" '.[] | select(.title == $title) | .number' | head -n 1)
           if [[ -n $number ]]; then
             gh issue edit "$number" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/body.md"
           else
@@ -58,5 +58,5 @@ jobs:
       - name: Close the issue when every tool is current
         if: steps.check.outputs.outdated == 'false'
         run: |
-          number=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "\"$ISSUE_TITLE\" in:title" --json number,title --jq --arg title "$ISSUE_TITLE" '.[] | select(.title == $title) | .number' | head -n 1)
+          number=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "\"$ISSUE_TITLE\" in:title" --json number,title | jq --raw-output --arg title "$ISSUE_TITLE" '.[] | select(.title == $title) | .number' | head -n 1)
           [[ -z $number ]] || gh issue close "$number" --repo "$GITHUB_REPOSITORY" --comment "Every pinned tool is at its latest upstream version."
