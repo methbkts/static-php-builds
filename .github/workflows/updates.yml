@@ -42,7 +42,7 @@ jobs:
         if: steps.check.outputs.outdated == 'true'
         run: |
           {
-            echo "A pinned tool has a newer upstream version. Bump the version and its SHA-256 in the file named in the table."
+            echo "A pinned tool has a newer upstream version. Run \`scripts/update-pins.sh\` and review the diff, or bump the version and its SHA-256 in the file named in the table."
             echo
             cat "$RUNNER_TEMP/report.md"
             echo
