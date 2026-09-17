@@ -62,6 +62,10 @@ pcre_jit=$("$php" -r 'echo ini_get("pcre.jit");')
 [[ $pcre_jit == 0 ]] || fail "expected pcre.jit=0, got [$pcre_jit]"
 check "PCRE JIT is off"
 
+memory_limit=$("$php" -r 'echo ini_get("memory_limit");')
+[[ $memory_limit == -1 ]] || fail "expected memory_limit=-1, got [$memory_limit]"
+check "memory limit is off"
+
 # shellcheck disable=SC2016 # PHP code, not shell
 default_modes=$(env -u XDEBUG_MODE "$php" -r 'echo implode(",", xdebug_info("mode"));')
 [[ -z $default_modes ]] || fail "Xdebug should be off by default, but these modes are active: $default_modes"

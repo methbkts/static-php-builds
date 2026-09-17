@@ -199,6 +199,7 @@ install -m 0755 "$ROOT_DIR/stubs/php" "$stage/bin/php"
 install -m 0755 "$ROOT_DIR/stubs/composer" "$stage/bin/composer"
 install -m 0644 "$ROOT_DIR/stubs/xdebug.ini" "$stage/etc/php/conf.d/xdebug.ini"
 install -m 0644 "$ROOT_DIR/stubs/pcre.ini" "$stage/etc/php/conf.d/pcre.ini"
+install -m 0644 "$ROOT_DIR/stubs/memory.ini" "$stage/etc/php/conf.d/memory.ini"
 
 download "https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar" "$work/composer.phar"
 verify_sha256 "$work/composer.phar" "$COMPOSER_SHA256"

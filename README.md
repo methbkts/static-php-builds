@@ -146,6 +146,8 @@ bin/composer
 libexec/php                      # the PHP binary
 libexec/composer.phar
 lib/php/extensions/xdebug.so
+etc/php/conf.d/memory.ini
+etc/php/conf.d/pcre.ini
 etc/php/conf.d/xdebug.ini
 share/licenses/                  # licenses of PHP and every bundled library
 share/build-info.txt
