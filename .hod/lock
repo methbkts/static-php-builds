@@ -12,6 +12,7 @@ f47191e1bad34e547d1b3ee3ae111c417c383ec5459d467bfae5e832d86275c9  .agents/skills
 984c7232ae1681ebba980ede2a0543db9a850dd2406990cdfa011384f929e981  .agents/skills/deps-upgrade/agents/openai.yaml
 275df9900027499c1ab97ab2675b2992e4267559bd61933a637d6a15d25a9350  .agents/skills/init/SKILL.md
 14ea76cbc5a8f35356ccf6aa20beddb249c6bc4aeb9999ec722c3acf92389d57  .agents/skills/init/agents/openai.yaml
+d91c7932dd6a3e46d0d0137d44d7d5ad08c5e914e370123255df35e3ae9ed8e9  .agents/skills/update-deps/SKILL.md
 8fee50af5e8d9ff55db278de9701b10e11dfef6eecfc4127f2608c85f0f0fdd1  .claude/skills/code-immutability/SKILL.md
 d489e18e5863e814795f5674a58f507e98fbbeb341a218dbd5bc9173d39554d3  .claude/skills/code-immutability/agents/openai.yaml
 0c47a67a1bcb590b057984fa4e9c4704fb3485652864f3e5ac6a3ba8200e74f4  .claude/skills/code-messages/SKILL.md
@@ -26,5 +27,6 @@ f47191e1bad34e547d1b3ee3ae111c417c383ec5459d467bfae5e832d86275c9  .claude/skills
 984c7232ae1681ebba980ede2a0543db9a850dd2406990cdfa011384f929e981  .claude/skills/deps-upgrade/agents/openai.yaml
 275df9900027499c1ab97ab2675b2992e4267559bd61933a637d6a15d25a9350  .claude/skills/init/SKILL.md
 14ea76cbc5a8f35356ccf6aa20beddb249c6bc4aeb9999ec722c3acf92389d57  .claude/skills/init/agents/openai.yaml
+d91c7932dd6a3e46d0d0137d44d7d5ad08c5e914e370123255df35e3ae9ed8e9  .claude/skills/update-deps/SKILL.md
 a559aa6408156e9cace8506aad5069262274fd645474488b550139198f8202fe  AGENTS.md
 336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49  CLAUDE.md
