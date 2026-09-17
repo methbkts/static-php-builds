@@ -32,22 +32,6 @@ sha256sum --check --strict SHA256SUMS
 tag=$(release_tag "$version")
 state=$(release_state "$version")
 
-if [[ $state == published ]]; then
-  echo "PHP $version is already published, nothing to do"
-  exit 0
-fi
-
-if [[ $state == draft ]]; then
-  gh release delete "$tag" --repo "$GITHUB_REPOSITORY" --yes
-fi
-
-latest=false
-
-if ! is_prerelease "$version"; then
-  highest=$({ gh release list --repo "$GITHUB_REPOSITORY" --exclude-drafts --limit 1000 --json tagName --jq '.[].tagName | ltrimstr("v")'; echo "$version"; } | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1)
-  [[ $highest == "$version" ]] && latest=true
-fi
-
 notes=$(
   cat <<EOF
 PHP ${version} for Linux (x86_64, aarch64; glibc ${GLIBC_VERSION}+).
@@ -65,6 +49,24 @@ gh attestation verify php-${version}-linux-x86_64.tar.gz --repo ${GITHUB_REPOSIT
 \`\`\`
 EOF
 )
+
+if [[ $state == published ]]; then
+  gh release upload "$tag" --repo "$GITHUB_REPOSITORY" --clobber "${expected[@]}" SHA256SUMS
+  gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --notes "$notes"
+  echo "Replaced the files of PHP $version"
+  exit 0
+fi
+
+if [[ $state == draft ]]; then
+  gh release delete "$tag" --repo "$GITHUB_REPOSITORY" --yes
+fi
+
+latest=false
+
+if ! is_prerelease "$version"; then
+  highest=$({ gh release list --repo "$GITHUB_REPOSITORY" --exclude-drafts --limit 1000 --json tagName --jq '.[].tagName | ltrimstr("v")'; echo "$version"; } | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1)
+  [[ $highest == "$version" ]] && latest=true
+fi
 
 gh release create "$tag" \
   --repo "$GITHUB_REPOSITORY" \

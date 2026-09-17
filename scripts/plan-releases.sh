@@ -34,7 +34,7 @@ for request in "${requests[@]}"; do
   fi
 
   echo "PHP $version will be built" >&2
-  releases+=("$(jq -cn --arg version "$version" --arg sha256 "$sha256" --arg url "$url" --arg state "$state" '{version: $version, sha256: $sha256, url: $url, state: $state}')")
+  releases+=("$(jq -cn --arg version "$version" --arg sha256 "$sha256" --arg url "$url" '{version: $version, sha256: $sha256, url: $url}')")
 done
 
 if ((${#releases[@]} == 0)); then
