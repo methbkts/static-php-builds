@@ -58,6 +58,10 @@ xdebug_version=$("$php" -r 'echo phpversion("xdebug");')
 [[ $xdebug_version == "$XDEBUG_VERSION" ]] || fail "expected Xdebug $XDEBUG_VERSION, got [$xdebug_version]"
 check "Xdebug $xdebug_version loads"
 
+pcre_jit=$("$php" -r 'echo ini_get("pcre.jit");')
+[[ $pcre_jit == 0 ]] || fail "expected pcre.jit=0, got [$pcre_jit]"
+check "PCRE JIT is off"
+
 # shellcheck disable=SC2016 # PHP code, not shell
 default_modes=$(env -u XDEBUG_MODE "$php" -r 'echo implode(",", xdebug_info("mode"));')
 [[ -z $default_modes ]] || fail "Xdebug should be off by default, but these modes are active: $default_modes"
