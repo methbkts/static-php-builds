@@ -80,18 +80,23 @@ validate_platform() {
   fail "unsupported platform: $1 (expected one of: $PLATFORMS)"
 }
 
+release_tag() {
+  echo "v$1"
+}
+
 release_state() {
-  local answer
-  if answer=$(gh release view "$1" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft 2>&1); then
+  local answer tag
+  tag=$(release_tag "$1")
+  if answer=$(gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft 2>&1); then
     case $answer in
     true) echo draft ;;
     false) echo published ;;
-    *) fail "unexpected answer from [gh release view $1]: [$answer]" ;;
+    *) fail "unexpected answer from [gh release view $tag]: [$answer]" ;;
     esac
   elif [[ $answer == *"release not found"* ]]; then
     echo absent
   else
-    fail "cannot read release [$1]: [$answer]"
+    fail "cannot read release [$tag]: [$answer]"
   fi
 }
 

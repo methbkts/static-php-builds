@@ -29,6 +29,7 @@ actual_count=$(find . -maxdepth 1 -type f | wc -l | tr -d ' ')
 ((actual_count == ${#expected[@]} + 1)) || fail "expected ${#expected[@]} tarballs and SHA256SUMS in $dist, found $actual_count files"
 sha256sum --check --strict SHA256SUMS
 
+tag=$(release_tag "$version")
 state=$(release_state "$version")
 
 if [[ $state == published ]]; then
@@ -37,13 +38,13 @@ if [[ $state == published ]]; then
 fi
 
 if [[ $state == draft ]]; then
-  gh release delete "$version" --repo "$GITHUB_REPOSITORY" --yes
+  gh release delete "$tag" --repo "$GITHUB_REPOSITORY" --yes
 fi
 
 latest=false
 
 if ! is_prerelease "$version"; then
-  highest=$({ gh release list --repo "$GITHUB_REPOSITORY" --exclude-drafts --limit 1000 --json tagName --jq '.[].tagName'; echo "$version"; } | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1)
+  highest=$({ gh release list --repo "$GITHUB_REPOSITORY" --exclude-drafts --limit 1000 --json tagName --jq '.[].tagName | ltrimstr("v")'; echo "$version"; } | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1)
   [[ $highest == "$version" ]] && latest=true
 fi
 
@@ -65,7 +66,7 @@ gh attestation verify php-${version}-linux-x86_64.tar.gz --repo ${GITHUB_REPOSIT
 EOF
 )
 
-gh release create "$version" \
+gh release create "$tag" \
   --repo "$GITHUB_REPOSITORY" \
   --target "$GITHUB_SHA" \
   --title "PHP $version" \
@@ -74,6 +75,6 @@ gh release create "$version" \
   --draft \
   "${expected[@]}" SHA256SUMS
 
-gh release edit "$version" --repo "$GITHUB_REPOSITORY" --draft=false
+gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --draft=false
 
 echo "Published PHP $version"
