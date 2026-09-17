@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
-      issues: write
+      issues: write # open, edit and close the update issue
     env:
       GH_TOKEN: ${{ github.token }}
       ISSUE_TITLE: Update pinned tools
