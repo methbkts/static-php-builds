@@ -60,7 +60,7 @@ jobs:
           - platform: linux-aarch64
             runner: ubuntu-22.04-arm
           - platform: macos-arm64
-            runner: macos-14
+            runner: macos-26
     env:
       PHP_VERSION: ${{ matrix.release.version }}
       PHP_SHA256: ${{ matrix.release.sha256 }}
