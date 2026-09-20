@@ -51,6 +51,7 @@ sha256:198a7b37da0658d36a93d158a0ec179b137b3a4d241c90a6650ae9ee8f91ec4a  pdo_sql
 sha256:88b8f6962b8f0b4091d1019e032435e0d9afb7a820f78fd107acdb2a8c890e03  php-frankenphp-caddy-v1.12.7-0-ga765b08.tar.gz
 sha256:8393329b62c79b9e50df0a8a068a67f1c525493fcd3940ac48e08fe9062ac71a  pkg-config-aarch64-linux-musl-1.2.5.txz
 sha256:7541c2f775e6a535acb47c8bab0a60d4c4c13eb62d09df334b21fecedd71a21e  pkg-config-aarch64-darwin.txz
+sha256:7541c2f775e6a535acb47c8bab0a60d4c4c13eb62d09df334b21fecedd71a21e  pkg-config-aarch64-macos-spc-mirror.txz
 sha256:b8e4225d72bb1e96d1b184bbd84ff13668f4b1d6c0594d09d0b10cd65cc0ae32  pkg-config-x86_64-linux-musl-1.2.5.txz
 sha256:6052d0d9f03cb9bf611133b10e0ef211687e13f9f629a63af44c9960659f0e3f  pnggroup-libpng-v1.6.58-0-g3061454.tar.gz
 sha256:bd580ed5cd2db7ba409c5d430fe7932886e070613ffdc43e044e0ef44938f80a  postgres-postgres-REL_18_6-0-g724edf9.tar.gz
