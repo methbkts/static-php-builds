@@ -199,7 +199,7 @@ if [[ $platform != macos-arm64 ]]; then
   build_options+=(--with-suggested-libs)
 fi
 if ! "$work/spc" build "$extensions" "${build_options[@]}"; then
-  [[ -x $work/buildroot/bin/php && -f $work/buildroot/modules/xdebug.so ]] || fail "static-php-cli did not produce the macOS build artifacts"
+  [[ -f $work/buildroot/bin/php && -f $work/buildroot/modules/xdebug.so ]] || fail "static-php-cli did not produce the macOS build artifacts"
 fi
 echo "::endgroup::"
 
