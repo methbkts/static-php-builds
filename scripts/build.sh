@@ -92,6 +92,7 @@ linux-aarch64)
 macos-arm64)
   spc_asset=spc-macos-aarch64.tar.gz
   spc_sha256=$SPC_SHA256_MACOS_AARCH64
+  export SPC_TARGET="native-macos"
   ;;
 esac
 
@@ -199,7 +200,10 @@ if [[ $platform != macos-arm64 ]]; then
   build_options+=(--with-suggested-libs)
 fi
 spc_status=0
-"$work/spc" build "$extensions" "${build_options[@]}" || spc_status=$?
+set +e
+"$work/spc" build "$extensions" "${build_options[@]}"
+spc_status=$?
+set -e
 if ((spc_status != 0)); then
   [[ -e $work/buildroot/bin/php && -e $work/buildroot/modules/xdebug.so ]] || fail "static-php-cli did not produce the macOS build artifacts"
   echo "static-php-cli exited with $spc_status after producing the macOS build artifacts"
