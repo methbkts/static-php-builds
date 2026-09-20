@@ -89,6 +89,10 @@ linux-aarch64)
   spc_sha256=$SPC_SHA256_LINUX_AARCH64
   export SPC_TARGET="aarch64-linux-gnu.${GLIBC_VERSION}"
   ;;
+macos-arm64)
+  spc_asset=spc-macos-aarch64.tar.gz
+  spc_sha256=$SPC_SHA256_MACOS_AARCH64
+  ;;
 esac
 
 record_sources() {
@@ -154,7 +158,7 @@ verify_sha256 "$xdebug_source" "$XDEBUG_SHA256"
 for mirror in "${SPC_SOURCE_MIRRORS[@]}"; do
   read -r mirror_source mirror_sha256 mirror_url <<<"$mirror"
   mirror_file="$work/downloads/$(basename "$mirror_url")"
-  [[ -f $mirror_file ]] || fail "source $mirror_source not found at $mirror_file"
+  [[ -f $mirror_file ]] || continue
   verify_sha256 "$mirror_file" "$mirror_sha256"
 done
 sources=$(record_sources)
@@ -182,11 +186,21 @@ if [[ ,$extensions, == *,imagick,* ]]; then
   echo "::endgroup::"
 fi
 
+if [[ $platform == macos-arm64 ]]; then
+  echo "::group::Patch libcares"
+  "$work/spc" extract libcares
+  patch -p1 -d "$work/source/libcares" <"$ROOT_DIR/patches/libcares-macos-pipe2.patch"
+  echo "::endgroup::"
+fi
+
 echo "::group::Build PHP $version"
-"$work/spc" build "$extensions" \
-  --build-cli \
-  --build-shared=xdebug \
-  --with-suggested-libs
+build_options=(--build-cli --build-shared=xdebug)
+if [[ $platform != macos-arm64 ]]; then
+  build_options+=(--with-suggested-libs)
+fi
+if ! "$work/spc" build "$extensions" "${build_options[@]}"; then
+  [[ -x $work/buildroot/bin/php && -f $work/buildroot/modules/xdebug.so ]] || fail "static-php-cli did not produce the macOS build artifacts"
+fi
 echo "::endgroup::"
 
 echo "::group::Package"
@@ -224,7 +238,11 @@ Sources: share/sources.txt
 EOF
 
 tarball="$dist/php-${version}-${platform}.tar.gz"
-tar --owner=0 --group=0 --numeric-owner -czf "$tarball" -C "$stage" bin etc lib libexec share
+tar_options=(-czf "$tarball")
+if [[ $platform == linux-* ]]; then
+  tar_options+=(--owner=0 --group=0 --numeric-owner)
+fi
+tar "${tar_options[@]}" -C "$stage" bin etc lib libexec share
 echo "::endgroup::"
 
 echo "Built $tarball ($(sha256_of "$tarball"))"

@@ -21,5 +21,7 @@ done
 actual_count=$(find . -maxdepth 1 -type f ! -name SHA256SUMS | wc -l | tr -d ' ')
 ((actual_count == ${#expected[@]})) || fail "expected ${#expected[@]} tarballs in $dist, found $actual_count files"
 
-sha256sum "${expected[@]}" >SHA256SUMS
+for file in "${expected[@]}"; do
+  printf '%s  %s\n' "$(sha256_of "$file")" "$file"
+done >SHA256SUMS
 cat SHA256SUMS

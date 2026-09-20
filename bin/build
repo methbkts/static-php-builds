@@ -9,11 +9,21 @@ request=${1:-}
 [[ -n $request ]] || fail "usage: bin/build <branch|version>, for example: bin/build 8.4"
 
 platform_of_this_machine() {
-  [[ $(uname -s) == Linux ]] || fail "this machine runs $(uname -s), and the builds run on Linux only"
-  case $(uname -m) in
-  x86_64) echo linux-x86_64 ;;
-  aarch64 | arm64) echo linux-aarch64 ;;
-  *) fail "unsupported machine: $(uname -m)" ;;
+  case $(uname -s) in
+  Linux)
+    case $(uname -m) in
+    x86_64) echo linux-x86_64 ;;
+    aarch64 | arm64) echo linux-aarch64 ;;
+    *) fail "unsupported machine: $(uname -s) $(uname -m)" ;;
+    esac
+    ;;
+  Darwin)
+    [[ $(uname -m) == arm64 ]] || fail "unsupported machine: $(uname -s) $(uname -m)"
+    echo macos-arm64
+    ;;
+  *)
+    fail "unsupported machine: $(uname -s) $(uname -m)"
+    ;;
   esac
 }
 
@@ -43,4 +53,4 @@ url=$(sed -n 's/^url=//p' <<<"$resolved")
 
 echo "Building PHP $version for $platform"
 GITHUB_TOKEN=$github_token "$ROOT_DIR/scripts/build.sh" "$version" "$sha256" "$platform" "$url"
-"$ROOT_DIR/scripts/smoke-test.sh" "$ROOT_DIR/dist/php-$version-$platform.tar.gz" "$version"
+"$ROOT_DIR/scripts/smoke-test.sh" "$ROOT_DIR/dist/php-$version-$platform.tar.gz" "$version" "$platform"

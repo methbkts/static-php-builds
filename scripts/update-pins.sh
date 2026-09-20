@@ -65,7 +65,7 @@ current() {
 }
 
 update_spc() {
-  local latest x86_64 aarch64
+  local latest x86_64 aarch64 macos_arm64
   latest=$(gh api repos/crazywhalecc/static-php-cli/releases/latest --jq .tag_name)
   if ! is_newer "$SPC_VERSION" "$latest"; then
     current static-php-cli "$SPC_VERSION"
@@ -73,9 +73,11 @@ update_spc() {
   fi
   x86_64=$(hash_of_url "https://github.com/crazywhalecc/static-php-cli/releases/download/${latest}/spc-linux-x86_64.tar.gz")
   aarch64=$(hash_of_url "https://github.com/crazywhalecc/static-php-cli/releases/download/${latest}/spc-linux-aarch64.tar.gz")
+  macos_arm64=$(hash_of_url "https://github.com/crazywhalecc/static-php-cli/releases/download/${latest}/spc-macos-aarch64.tar.gz")
   set_value "$build_env" SPC_VERSION "$latest"
   set_value "$build_env" SPC_SHA256_LINUX_X86_64 "$x86_64"
   set_value "$build_env" SPC_SHA256_LINUX_AARCH64 "$aarch64"
+  set_value "$build_env" SPC_SHA256_MACOS_AARCH64 "$macos_arm64"
   updated static-php-cli "$SPC_VERSION" "$latest"
 }
 

@@ -11,11 +11,11 @@
 
 ## Introduction
 
-Static PHP Builds provides precompiled PHP for [mise](https://mise.jdx.dev). With Static PHP Builds, installing PHP is a download instead of a compile — each release includes the PHP CLI, Composer, and Xdebug, for Linux x86_64 and Linux aarch64.
+Static PHP Builds provides precompiled PHP for [mise](https://mise.jdx.dev). With Static PHP Builds, installing PHP is a download instead of a compile — each release includes the PHP CLI, Composer, and Xdebug, for Linux x86_64, Linux aarch64, and macOS arm64.
 
 The builds are not tied to a framework. They include the extensions that Laravel, Symfony, WordPress, and most other PHP applications need: database drivers for MySQL, PostgreSQL, SQLite, and SQL Server, Redis and MongoDB clients, image processing with GD and Imagick, intl, sodium, and more.
 
-The full list of extensions is in [`config/extensions.txt`](config/extensions.txt). A PHP branch that an extension does not support yet builds without it, as listed in [`config/extensions-excluded.txt`](config/extensions-excluded.txt). Linux builds run on any distribution with glibc 2.17 or newer.
+The full list of extensions is in [`config/extensions.txt`](config/extensions.txt). A PHP branch that an extension does not support yet builds without it, as listed in [`config/extensions-excluded.txt`](config/extensions-excluded.txt). Linux builds run on any distribution with glibc 2.17 or newer, and macOS builds run on Apple Silicon.
 
 ## Installation
 
@@ -128,7 +128,7 @@ gh workflow run release.yml -f version=all -f publish=true
 
 ### Building Locally
 
-To check that a build works on your own Linux machine, run `bin/build` with a PHP branch or version. It resolves the newest release on php.net, builds it for your CPU architecture, and smoke tests the result:
+To check that a build works on your own Linux or macOS arm64 machine, run `bin/build` with a PHP branch or version. It resolves the newest release on php.net, builds it for your CPU architecture, and smoke tests the result:
 
 ```sh
 bin/build 8.4

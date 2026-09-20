@@ -7,9 +7,11 @@ source "$(dirname "$0")/../config/build.env"
 
 tarball=${1:-}
 version=${2:-}
+platform=${3:-}
 
-[[ -f $tarball ]] || fail "usage: smoke-test.sh <tarball> <version>"
+[[ -f $tarball ]] || fail "usage: smoke-test.sh <tarball> <version> <platform>"
 validate_version "$version"
+validate_platform "$platform"
 
 prefix=$(mktemp -d)
 trap 'rm -rf "$prefix"' EXIT
@@ -129,10 +131,12 @@ composer_version=$("$prefix/bin/composer" --version --no-ansi 2>/dev/null)
 [[ $composer_version == "Composer version ${COMPOSER_VERSION} "* ]] || fail "unexpected Composer output: $composer_version"
 check "Composer $COMPOSER_VERSION runs"
 
-newest_glibc=$(objdump -T "$prefix/libexec/php" | grep -oE 'GLIBC_[0-9]+\.[0-9]+' | sed 's/GLIBC_//' | sort -V | tail -n 1)
-if [[ $(printf '%s\n%s\n' "$newest_glibc" "$GLIBC_VERSION" | sort -V | tail -n 1) != "$GLIBC_VERSION" ]]; then
-  fail "binary needs glibc $newest_glibc, newer than the $GLIBC_VERSION baseline"
+if [[ $platform == linux-* ]]; then
+  newest_glibc=$(objdump -T "$prefix/libexec/php" | grep -oE 'GLIBC_[0-9]+\.[0-9]+' | sed 's/GLIBC_//' | sort -V | tail -n 1)
+  if [[ $(printf '%s\n%s\n' "$newest_glibc" "$GLIBC_VERSION" | sort -V | tail -n 1) != "$GLIBC_VERSION" ]]; then
+    fail "binary needs glibc $newest_glibc, newer than the $GLIBC_VERSION baseline"
+  fi
+  check "needs glibc $newest_glibc at most"
 fi
-check "needs glibc $newest_glibc at most"
 
 echo "Smoke test passed for $(basename "$tarball")"

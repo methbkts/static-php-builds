@@ -53,12 +53,14 @@ jobs:
       fail-fast: false
       matrix:
         release: ${{ fromJSON(needs.plan.outputs.releases) }}
-        platform: [linux-x86_64, linux-aarch64]
+        platform: [linux-x86_64, linux-aarch64, macos-arm64]
         include:
           - platform: linux-x86_64
             runner: ubuntu-22.04
           - platform: linux-aarch64
             runner: ubuntu-22.04-arm
+          - platform: macos-arm64
+            runner: macos-14
     env:
       PHP_VERSION: ${{ matrix.release.version }}
       PHP_SHA256: ${{ matrix.release.sha256 }}
@@ -106,7 +108,7 @@ jobs:
           key: ${{ steps.libraries.outputs.cache-primary-key }}
 
       - name: Smoke test
-        run: scripts/smoke-test.sh "dist/php-$PHP_VERSION-$PLATFORM.tar.gz" "$PHP_VERSION"
+        run: scripts/smoke-test.sh "dist/php-$PHP_VERSION-$PLATFORM.tar.gz" "$PHP_VERSION" "$PLATFORM"
 
       - name: Upload
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

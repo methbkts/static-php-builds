@@ -1,0 +1,11 @@
+--- a/src/lib/event/ares_event_wake_pipe.c
++++ b/src/lib/event/ares_event_wake_pipe.c
+@@ -66,7 +66,7 @@ static ares_pipeevent_t *ares_pipeevent_init(void)
+   p->filedes[0] = -1;
+   p->filedes[1] = -1;
+ 
+-#  ifdef HAVE_PIPE2
++#  if defined(HAVE_PIPE2) && !defined(__APPLE__)
+   if (pipe2(p->filedes, O_NONBLOCK | O_CLOEXEC) != 0) {
+     ares_pipeevent_destroy(p); /* LCOV_EXCL_LINE: UntestablePath */
+     return NULL;               /* LCOV_EXCL_LINE: UntestablePath */
